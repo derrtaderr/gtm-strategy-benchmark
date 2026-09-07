@@ -2,7 +2,7 @@
   "name": "naive",
   "label": "Arm A, naive",
   "subject": "Northwind Robotics, a fictional warehouse automation vendor",
-  "context": "A go-to-market strategy for Northwind Robotics produced by a single unconstrained prompt, with no requirement that any claim carry evidence.",
+  "context": "A go-to-market strategy document for Northwind Robotics, a warehouse automation vendor.",
   "strategy": "strategy.md",
   "verdicts": "verdicts.json"
 }
