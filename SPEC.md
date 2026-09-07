@@ -1,4 +1,4 @@
-# SPEC — strategy-benchmark
+# SPEC, strategy-benchmark
 
 A reproducible benchmark that measures whether a GTM strategy's claims survive
 adversarial scrutiny.
