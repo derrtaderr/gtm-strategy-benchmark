@@ -56,6 +56,31 @@ test("the json envelope states that the verdicts were applied by hand", async ()
   assert.match(envelope.provenance, /hand/i);
 });
 
+test("a single arm run prints no spread, since one arm is not a comparison", async () => {
+  const { code, stdout } = await cli([
+    "--recorded",
+    "--arm",
+    "fixtures/arm-b-gated",
+  ]);
+
+  assert.equal(code, 0);
+  assert.match(stdout, /Arm B, gated/);
+  assert.ok(!/Spread/i.test(stdout), "a single arm has nothing to spread against");
+});
+
+test("a single arm json envelope carries no spread field", async () => {
+  const { stdout } = await cli([
+    "--recorded",
+    "--arm",
+    "fixtures/arm-b-gated",
+    "--json",
+  ]);
+
+  const envelope = JSON.parse(stdout);
+  assert.equal(envelope.arms.length, 1);
+  assert.ok(!("spread" in envelope));
+});
+
 test("help exits 0 and describes recorded mode", async () => {
   const { code, stdout } = await cli(["--help"]);
 

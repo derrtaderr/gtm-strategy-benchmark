@@ -16,16 +16,12 @@ import { runArm, runRecorded } from "../lib/run.mjs";
 import { loadArm, ARM_DIRS } from "../lib/arms.mjs";
 import { compareArms, renderTable } from "../lib/score.mjs";
 import { recordedProvider } from "../lib/providers/recorded.mjs";
-import { anthropicProvider } from "../lib/providers/anthropic.mjs";
+import { anthropicProvider, DEFAULT_MODEL } from "../lib/providers/anthropic.mjs";
+import { buildEnvelope, provenanceFor } from "../lib/envelope.mjs";
 
 const EXIT_OK = 0;
 const EXIT_USAGE = 1;
 const EXIT_INPUT = 2;
-
-const PROVENANCE =
-  "The verdicts committed in this repository were applied by hand from the " +
-  "examiner rubric in SPEC.md section 4. They were not captured from a live " +
-  "model run. Run --live with your own key to judge these claims independently.";
 
 const USAGE = `strategy-benchmark
 
@@ -66,25 +62,7 @@ function parseArgs(argv) {
   return options;
 }
 
-function envelope(mode, comparison) {
-  return {
-    mode,
-    provenance: PROVENANCE,
-    spread: comparison.spread,
-    arms: comparison.arms.map((a) => ({
-      name: a.name,
-      label: a.label,
-      subject: a.subject,
-      claims: a.claims,
-      survives: a.survives,
-      collapses: a.collapses,
-      survivalRate: a.survivalRate,
-      verdicts: a.verdicts,
-    })),
-  };
-}
-
-function printHuman(mode, comparison) {
+function printHuman({ mode, comparison, model, at }) {
   process.stdout.write(`Claim survival under adversarial scrutiny (${mode})\n\n`);
   process.stdout.write(`${renderTable(comparison)}\n\n`);
 
@@ -92,7 +70,7 @@ function printHuman(mode, comparison) {
     process.stdout.write(`${arm.label} examines ${arm.subject}.\n`);
   }
 
-  process.stdout.write(`\n${PROVENANCE}\n`);
+  process.stdout.write(`\n${provenanceFor({ mode, model, at })}\n`);
 }
 
 async function main(argv) {
@@ -132,7 +110,7 @@ async function main(argv) {
           ? await singleArmRecorded(dirs[0])
           : await runRecorded(dirs);
 
-      emit(options, "recorded", comparison);
+      emit(options, { mode: "recorded", comparison });
       return EXIT_OK;
     }
 
@@ -147,16 +125,27 @@ async function main(argv) {
     }
 
     const comparison =
-      scores.length === 1
-        ? { arms: scores, spread: 0 }
-        : compareArms(scores);
+      scores.length === 1 ? singleArm(scores[0]) : compareArms(scores);
 
-    emit(options, "live", comparison);
+    emit(options, {
+      mode: "live",
+      comparison,
+      model: DEFAULT_MODEL,
+      at: new Date().toISOString(),
+    });
     return EXIT_OK;
   } catch (err) {
     process.stderr.write(`${err.message}\n`);
     return EXIT_INPUT;
   }
+}
+
+/**
+ * One arm carries no spread. See SPEC.md section 5, a single arm is a
+ * measurement rather than a benchmark, so there is nothing to spread against.
+ */
+function singleArm(score) {
+  return { arms: [score] };
 }
 
 async function singleArmRecorded(dir) {
@@ -165,15 +154,15 @@ async function singleArmRecorded(dir) {
     arm,
     provider: recordedProvider(arm.records),
   });
-  return { arms: [score], spread: 0 };
+  return singleArm(score);
 }
 
-function emit(options, mode, comparison) {
+function emit(options, run) {
   if (options.json) {
-    process.stdout.write(`${JSON.stringify(envelope(mode, comparison), null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(buildEnvelope(run), null, 2)}\n`);
     return;
   }
-  printHuman(mode, comparison);
+  printHuman(run);
 }
 
 process.exitCode = await main(process.argv.slice(2));
