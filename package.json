@@ -12,7 +12,7 @@
     "strategy-benchmark": "./bin/benchmark.mjs"
   },
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test",
     "benchmark": "node bin/benchmark.mjs --recorded"
   }
 }
