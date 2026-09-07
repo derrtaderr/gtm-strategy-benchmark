@@ -77,17 +77,32 @@ can check by hand.
 
 | Signal | Fires on |
 |---|---|
-| `numeric` | a bare number, percentage, currency amount, multiple, or magnitude suffix |
+| `numeric` | a digit not immediately preceded by a letter, which admits 40, 1.4, $2,400 and excludes Q1 and C2 |
 | `causal` | because, since, therefore, so that, which is why, drives, driven by, leads to, results in, causes |
 | `projection` | will, expect, projected, forecast, should reach, anticipate, by Q1-Q4, by H1-H2, by a four digit year, within N |
 | `segment` | a named market or entity, detected as a proper-noun run away from sentence start, or an explicit segment term such as mid-market, enterprise, SMB, ICP, vertical, persona, segment |
 
 Excluded from consideration before signal matching:
 
+The `segment` proper-noun rule never looks at the first token of a sentence,
+because every sentence starts with a capital letter and counting that would
+mark all prose as naming a segment.
+
+Signals always report in the fixed order numeric, causal, projection, segment,
+so a claim's shape does not shift between runs.
+
+Excluded from consideration before signal matching:
+
 - markdown heading lines
-- list bullets that carry no sentence-ending punctuation and no signal
 - fenced code blocks
 - blank lines
+
+A list bullet has its marker removed and is then treated as an ordinary
+sentence, so a bullet carrying a signal is a claim and a bullet carrying none is
+skipped by the same rule as any other line.
+
+A terminal mark ends a sentence only when whitespace or the end of the line
+follows it. Decimal points and version numbers stay inside their sentence.
 
 Rationale for excluding headings. A heading is a label for a section, not an
 assertion the author is standing behind, and heading text trips the `segment`

@@ -29,3 +29,83 @@ test("assigns stable sequential ids in document order", () => {
   assert.equal(claims[0].text, "Deployments rose 40 percent.");
   assert.equal(claims[1].text, "Renewals rose 12 percent.");
 });
+
+test("fires the causal signal on an explanatory connector", () => {
+  const claims = extractClaims("Renewals slipped because onboarding stalled.");
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].signals, ["causal"]);
+});
+
+test("fires the projection signal on a forward looking assertion", () => {
+  const claims = extractClaims("The motion will compound over the coming year.");
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].signals, ["projection"]);
+});
+
+test("fires the segment signal on a named entity away from sentence start", () => {
+  const claims = extractClaims("The buyer is Acme Freight.");
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].signals, ["segment"]);
+});
+
+test("fires the segment signal on an explicit segment term", () => {
+  const claims = extractClaims("Our wedge is the mid-market.");
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].signals, ["segment"]);
+});
+
+test("does not fire the segment signal on a capitalized sentence start alone", () => {
+  const claims = extractClaims("Renewals matter.");
+
+  assert.deepEqual(claims, []);
+});
+
+test("reports every signal a sentence carries, in fixed order", () => {
+  const claims = extractClaims(
+    "Acme Freight will grow 30 percent because dispatch density compounds."
+  );
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].signals, [
+    "numeric",
+    "causal",
+    "projection",
+    "segment",
+  ]);
+});
+
+test("skips markdown headings", () => {
+  const claims = extractClaims("## Why Northwind Robotics wins\n\nOverview follows.");
+
+  assert.deepEqual(claims, []);
+});
+
+test("skips fenced code blocks", () => {
+  const claims = extractClaims(
+    "Overview follows.\n\n```\nrevenue = seats * 4200\n```\n\nMore overview."
+  );
+
+  assert.deepEqual(claims, []);
+});
+
+test("treats a bullet as a sentence with the marker removed", () => {
+  const claims = extractClaims("- Deployments rose 40 percent");
+
+  assert.equal(claims.length, 1);
+  assert.equal(claims[0].text, "Deployments rose 40 percent");
+});
+
+test("does not split a sentence on a decimal point", () => {
+  const claims = extractClaims("Pipeline reached 1.4 million in coverage.");
+
+  assert.equal(claims.length, 1);
+  assert.equal(claims[0].text, "Pipeline reached 1.4 million in coverage.");
+});
+
+test("refuses input that is not text, naming the type received", () => {
+  assert.throws(() => extractClaims(null), /received object/);
+});
