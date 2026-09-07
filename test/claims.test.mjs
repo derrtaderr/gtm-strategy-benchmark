@@ -109,3 +109,52 @@ test("does not split a sentence on a decimal point", () => {
 test("refuses input that is not text, naming the type received", () => {
   assert.throws(() => extractClaims(null), /received object/);
 });
+
+test("carries a null evidence entry when a claim is unannotated", () => {
+  const claims = extractClaims("Deployments rose 40 percent.");
+
+  assert.equal(claims[0].evidence, null);
+});
+
+test("binds an annotated claim to its evidence id and grade", () => {
+  const claims = extractClaims(
+    "Churn concentrates under 20 seats. [evidence: E3 | grade: C2]"
+  );
+
+  assert.equal(claims.length, 1);
+  assert.deepEqual(claims[0].evidence, { id: "E3", grade: "C2" });
+});
+
+test("strips the annotation from the claim text", () => {
+  const claims = extractClaims(
+    "Churn concentrates under 20 seats. [evidence: E3 | grade: C2]"
+  );
+
+  assert.equal(claims[0].text, "Churn concentrates under 20 seats.");
+});
+
+test("accepts every grade from C1 through C5", () => {
+  for (const grade of ["C1", "C2", "C3", "C4", "C5"]) {
+    const claims = extractClaims(
+      `Churn concentrates under 20 seats. [evidence: E1 | grade: ${grade}]`
+    );
+    assert.equal(claims[0].evidence.grade, grade);
+  }
+});
+
+test("refuses a grade outside C1 through C5, naming the bad token", () => {
+  assert.throws(
+    () =>
+      extractClaims(
+        "Churn concentrates under 20 seats. [evidence: E3 | grade: C9]"
+      ),
+    /C9/
+  );
+});
+
+test("refuses an annotation missing its grade rather than downgrading silently", () => {
+  assert.throws(
+    () => extractClaims("Churn concentrates under 20 seats. [evidence: E3]"),
+    /grade/
+  );
+});
