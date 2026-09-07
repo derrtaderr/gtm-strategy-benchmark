@@ -50,16 +50,6 @@
       "claim": "The reply rate from the outbound test will hold as send volume scales.",
       "verdict": "COLLAPSES",
       "reason": "A 140 send sample supports the observed result and not its persistence at higher volume, which the C4 grade concedes is inference."
-    },
-    {
-      "claim": "Paid search is deprioritized because no evidence was located either way on its performance for this segment.",
-      "verdict": "SURVIVES",
-      "reason": "The stated reason is exactly true of the document, which records the gap as an open question rather than dressing the decision in a finding."
-    },
-    {
-      "claim": "Acme Freight holds no usable data on win rate by lane, so this plan makes no lane-level targeting claim.",
-      "verdict": "SURVIVES",
-      "reason": "It asserts an absence and the document demonstrates that absence by containing no lane-level claim anywhere."
     }
   ]
 }

@@ -57,6 +57,11 @@
       "reason": "A superlative across an entire category is asserted with no channel comparison, and a year of budget is committed on it."
     },
     {
+      "claim": "Paid search is saturated and expensive here, so it should be deprioritized in favor of outbound and events.",
+      "verdict": "COLLAPSES",
+      "reason": "Saturation and cost are asserted as facts about the channel with no auction, bid, or spend data behind either, and a channel is dropped on that basis."
+    },
+    {
       "claim": "A partner motion through systems integrators will eventually contribute 40 percent of new revenue.",
       "verdict": "COLLAPSES",
       "reason": "A specific revenue share is projected for a motion that does not yet exist and has produced no data."

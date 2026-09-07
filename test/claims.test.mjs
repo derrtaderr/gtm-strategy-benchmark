@@ -37,6 +37,90 @@ test("fires the causal signal on an explanatory connector", () => {
   assert.deepEqual(claims[0].signals, ["causal"]);
 });
 
+test("fires the causal signal on a bare so", () => {
+  const claims = extractClaims(
+    "Paid search is saturated and expensive here, so it should be deprioritized."
+  );
+
+  assert.equal(claims.length, 1);
+  assert.ok(claims[0].signals.includes("causal"));
+});
+
+test("fires the causal signal on a bare therefore", () => {
+  const claims = extractClaims("Demand is thin, therefore the wedge narrows.");
+
+  assert.equal(claims.length, 1);
+  assert.ok(claims[0].signals.includes("causal"));
+});
+
+test("fires the causal signal on a bare thus", () => {
+  const claims = extractClaims("Demand is thin, thus the wedge narrows.");
+
+  assert.equal(claims.length, 1);
+  assert.ok(claims[0].signals.includes("causal"));
+});
+
+test("does not fire the causal signal on so inside another word", () => {
+  const claims = extractClaims("The account was also reviewed.");
+
+  assert.deepEqual(claims, []);
+});
+
+test("skips a bare cross reference rather than manufacturing a claim from it", () => {
+  const claims = extractClaims("See section 3.4.");
+
+  assert.deepEqual(claims, []);
+});
+
+test("skips a cross reference to a table or figure", () => {
+  assert.deepEqual(extractClaims("Refer to table 2."), []);
+  assert.deepEqual(extractClaims("See appendix 1."), []);
+});
+
+test("keeps a real claim that happens to end with a cross reference", () => {
+  const claims = extractClaims("Renewals rose 12 percent, see section 3.4.");
+
+  assert.equal(claims.length, 1);
+});
+
+test("skips a claim the document makes about its own restraint", () => {
+  const claims = extractClaims(
+    "Acme Freight holds no usable data on win rate by lane, so this plan makes no lane-level targeting claim."
+  );
+
+  assert.deepEqual(claims, []);
+});
+
+test("skips a decision justified by the absence of evidence", () => {
+  const claims = extractClaims(
+    "Paid search is deprioritized because no evidence was located either way on its performance for this segment."
+  );
+
+  assert.deepEqual(claims, []);
+});
+
+test("skips a sentence asserting that no data exists", () => {
+  const claims = extractClaims("Acme Freight holds no usable data on win rate by lane.");
+
+  assert.deepEqual(claims, []);
+});
+
+test("keeps a claim about the world that merely uses the word plan", () => {
+  const claims = extractClaims(
+    "The plan produces 120 qualified opportunities in the first year."
+  );
+
+  assert.equal(claims.length, 1);
+});
+
+test("keeps a substantive channel claim that is not about the document itself", () => {
+  const claims = extractClaims(
+    "Paid search is saturated and expensive here, so it should be deprioritized."
+  );
+
+  assert.equal(claims.length, 1);
+});
+
 test("fires the projection signal on a forward looking assertion", () => {
   const claims = extractClaims("The motion will compound over the coming year.");
 

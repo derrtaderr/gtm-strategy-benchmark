@@ -48,7 +48,7 @@ Mid-market shippers moving 200 to 900 loads a month are the segment where reliab
 
 The reply rate from the outbound test will hold as send volume scales. [evidence: E6 | grade: C4]
 
-Paid search is deprioritized because no evidence was located either way on its performance for this segment. [evidence: E7 | grade: C5]
+Paid search is deprioritized because no evidence was located either way on its performance for this segment.
 
 ## What was refused
 
