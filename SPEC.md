@@ -190,6 +190,13 @@ automatically a survivor. A C5 assumption stated as a firm projection collapses
 the same way a naive claim does. The gate helps by forcing the grade to be
 visible, not by granting immunity.
 
+What never reaches this stage matters as much as the rubric applied here.
+Meta-claims, where a document asserts something about its own scope rather than
+about the world, are excluded during extraction and never scored. A naive
+document structurally cannot produce them, so counting them would hand the gated
+arm survivors the naive arm has no way to earn. The rule and its reasoning are
+in section 3 under "Two kinds of sentence are never claims".
+
 ### The examiner is blinded
 
 The examiner is never told which arm it is judging. Each arm supplies a context
