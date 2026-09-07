@@ -78,11 +78,35 @@ can check by hand.
 | Signal | Fires on |
 |---|---|
 | `numeric` | a digit not immediately preceded by a letter, which admits 40, 1.4, $2,400 and excludes Q1 and C2 |
-| `causal` | because, since, therefore, so that, which is why, drives, driven by, leads to, results in, causes |
+| `causal` | because, since, therefore, thus, hence, so, which is why, drives, driven by, leads to, results in, causes |
 | `projection` | will, expect, projected, forecast, should reach, anticipate, by Q1-Q4, by H1-H2, by a four digit year, within N |
 | `segment` | a named market or entity, detected as a proper-noun run away from sentence start, or an explicit segment term such as mid-market, enterprise, SMB, ICP, vertical, persona, segment |
 
 Excluded from consideration before signal matching:
+
+### Two kinds of sentence are never claims, whatever signals they carry
+
+**Cross references.** A sentence that only points at another part of the
+document, such as "See section 3.4", carries a number and would otherwise be
+manufactured into a claim out of what is really a table of contents entry.
+
+**Meta-claims.** A sentence asserting something about the document's own scope
+or restraint rather than about the world. "This plan makes no lane-level
+targeting claim" and "no evidence was located either way" are both true by
+construction, and a document earns nothing by describing itself accurately.
+
+The reason this exclusion matters more than it looks. **A naive document
+structurally cannot reach this denominator.** Only a disciplined document
+narrates its own refusals, so counting meta-claims hands the gated arm free
+survivors that the naive arm has no way to earn. Leaving them in flatters
+exactly the arm this benchmark is trying to test, which is the failure mode a
+self-authored benchmark is most prone to.
+
+The rule is deliberately narrow. It fires on a document declining to assert
+something and on a document reporting that it found no evidence. It does not
+fire on a sentence that merely mentions the plan while asserting an outcome, so
+"The plan produces 120 qualified opportunities in the first year" stays a claim
+and collapses on its merits.
 
 The `segment` proper-noun rule never looks at the first token of a sentence,
 because every sentence starts with a capital letter and counting that would
@@ -120,6 +144,12 @@ Northwind Robotics churn concentrates in accounts under 20 seats. [evidence: E3 
 
 The annotation is stripped from the claim text and recorded on the claim as
 `{ id: "E3", grade: "C2" }`. A claim with no annotation carries `evidence: null`.
+
+An annotation binds to the sentence immediately before it and to no other. If
+that sentence carries no assertable claim, the annotation is an orphan and
+extraction refuses, naming the evidence id and the sentence. Binding it to an
+earlier claim would attribute evidence to a sentence it was never written for,
+and dropping it would let a graded document be scored as an ungraded one.
 
 Grades follow a five point admiralty-style scale, the convention the
 gtm-architect discipline uses. This benchmark cites that discipline and
@@ -160,6 +190,28 @@ automatically a survivor. A C5 assumption stated as a firm projection collapses
 the same way a naive claim does. The gate helps by forcing the grade to be
 visible, not by granting immunity.
 
+### The examiner is blinded
+
+The examiner is never told which arm it is judging. Each arm supplies a context
+line filling one neutral template, naming the company and its industry and
+nothing else.
+
+```
+A go-to-market strategy document for Northwind Robotics, a warehouse automation vendor.
+A go-to-market strategy document for Acme Freight, a regional freight brokerage.
+```
+
+A context saying "produced under a gated-evidence discipline" would tell the
+judge the hypothesis, and a judge told the hypothesis is the channel through
+which a benchmark rigs itself. A test composes the prompt for both arms and
+asserts it carries no condition-revealing token, so the blinding is checked
+rather than assumed.
+
+One asymmetry remains and it is intentional. The prompt states whether the claim
+is bound to a graded evidence entry, which necessarily differs between arms.
+That is the property under examination rather than a label of the condition,
+and the rubric cannot be applied without it.
+
 ### The provider seam
 
 ```js
@@ -190,6 +242,8 @@ comfortable number when it actually examined nothing.
 | claim set is empty | the run refuses, because a benchmark that examined nothing must not print a rate |
 | fixture file missing or malformed | the run refuses, naming the file path |
 | live mode with no API key | the run refuses at construction, before any network call |
+| an evidence annotation with nothing to bind to | extraction refuses, naming the evidence id and the orphaned sentence |
+| a live envelope naming no model | the envelope refuses, since an unattributed verdict cannot be challenged |
 
 There is no default verdict. There is no partial score. A run either examines
 every claim or it produces no number at all.
@@ -288,6 +342,19 @@ The `verdicts` array in that envelope is the recorded fixture format. Replacing
 the committed `verdicts.json` with a live capture upgrades the artifact from
 consistently applied to independently judged, and nothing else in the pipeline
 changes.
+
+### Provenance is mode-conditional
+
+The provenance line describes how the verdicts in front of you were actually
+produced, and it therefore differs by mode. A recorded run says they were
+applied by hand. A live run names the model, the run timestamp, and the blinded
+context, and warns that a re-run will vary.
+
+A single constant would mean a live run printing "not captured from a live model
+run" about verdicts a model had just produced. Since this document instructs
+readers to paste a live envelope into a fixture, that false line would travel
+into their repositories. A live envelope that names no model is refused, because
+an unattributed verdict cannot be reproduced or challenged.
 
 ---
 

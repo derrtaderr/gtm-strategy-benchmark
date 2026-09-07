@@ -16,7 +16,7 @@ of a document's assertable claims that hold up under examination.
 
 ```bash
 git clone <this repo> && cd strategy-benchmark
-npm test                          # 68 tests, no key, no network
+npm test                          # 99 tests, no key, no network
 node bin/benchmark.mjs --recorded
 ```
 
@@ -27,20 +27,24 @@ install. Node 20 or newer.
 
 ## The headline number
 
-Pasted verbatim from `node bin/benchmark.mjs --recorded`.
+The complete output of `node bin/benchmark.mjs --recorded`, pasted verbatim.
+Nothing is trimmed, including the closing paragraph about where these verdicts
+came from, which is the last line anyone should be allowed to cut.
 
 ```
 Claim survival under adversarial scrutiny (recorded)
 
 | Arm          | Claims | Survives | Collapses | Survival rate |
 |--------------|--------|----------|-----------|---------------|
-| Arm A, naive |     15 |        1 |        14 |          6.7% |
-| Arm B, gated |     12 |        8 |         4 |         66.7% |
+| Arm A, naive |     16 |        1 |        15 |          6.3% |
+| Arm B, gated |     10 |        6 |         4 |         60.0% |
 
-Spread between arms: 60.0%
+Spread between arms: 53.8%
 
 Arm A, naive examines Northwind Robotics, a fictional warehouse automation vendor.
 Arm B, gated examines Acme Freight, a fictional regional freight brokerage.
+
+The verdicts committed in this repository were applied by hand from the examiner rubric in SPEC.md section 4. They were not captured from a live model run. Run --live with your own key to judge these claims independently.
 ```
 
 Read the shape of it rather than the decimal. The gated arm makes fewer claims
@@ -52,6 +56,14 @@ automatically a survivor. A C5 assumption phrased as a firm projection collapses
 exactly the way a naive claim does, and one arm B claim collapses for stating a
 magnitude its cited evidence supports only as a direction. The gate helps by
 making the grade visible, not by granting immunity.
+
+Arm B's denominator is deliberately smaller than it could be. Sentences where
+the document describes its own restraint, such as "this plan makes no
+lane-level targeting claim", are excluded before scoring. They are true by
+construction, and a naive document structurally cannot produce them, so
+counting them would hand the gated arm survivors the naive arm has no way to
+earn. Excluding them moved arm B from 66.7% down to 60.0%, and the number is
+worth more for it.
 
 ---
 
@@ -75,9 +87,11 @@ strategy document
 
 **Claim extraction** treats a sentence as an assertable claim when it carries at
 least one of four signals, which are a number, a causal connector, a forward
-looking projection, or a named market or entity. The rules are written out in
-full in [SPEC.md](SPEC.md) section 3 so you can disagree with a specific one
-rather than with a black box.
+looking projection, or a named market or entity. Two kinds of sentence are never
+claims whatever signals they carry, which are bare cross references such as "See
+section 3.4" and meta-claims where the document describes its own scope rather
+than the world. The rules are written out in full in [SPEC.md](SPEC.md) section
+3 so you can disagree with a specific one rather than with a black box.
 
 **Scrutiny** hands each claim to an examiner that demands its basis and returns
 `SURVIVES` or `COLLAPSES` with a reason. The examiner is an injected function,
@@ -85,6 +99,26 @@ so the recorded provider replays committed verdicts byte for byte while the live
 provider talks to a model.
 
 **Scoring** counts and divides. That is all it does.
+
+### The examiner is blinded
+
+The examiner is never told which arm it is judging. Both arms supply a context
+line filling one neutral template, naming the company and its industry and
+nothing else.
+
+```
+A go-to-market strategy document for Northwind Robotics, a warehouse automation vendor.
+A go-to-market strategy document for Acme Freight, a regional freight brokerage.
+```
+
+A context saying "produced under a gated-evidence discipline" would hand the
+judge the hypothesis, which is how a benchmark quietly rigs itself. A test
+composes the prompt for both arms and greps it for condition-revealing tokens,
+so the blinding is checked rather than promised.
+
+One asymmetry stays on purpose. The prompt does state whether the claim is bound
+to a graded evidence entry, because that is the property under examination and
+the rubric cannot be applied without it.
 
 ### Everything fails closed
 
@@ -133,7 +167,7 @@ how much weight to put on the number.
    an assertion.
 
 Arm A was deliberately written to be thinly evidenced, which is what a naive
-prompt produces and is the whole reason it is arm A. Its 6.7% is a fair score of
+prompt produces and is the whole reason it is arm A. Its 6.3% is a fair score of
 that document and not a fair score of every unconstrained model output.
 
 ---
@@ -171,6 +205,18 @@ The `verdicts` array in that envelope is the recorded fixture format. Writing it
 into `verdicts.json` upgrades your arm from consistently applied to
 independently judged, and nothing else in the pipeline changes.
 
+A live envelope carries its own provenance rather than the committed one, so
+what you paste describes how it was actually made.
+
+```json
+{
+  "mode": "live",
+  "provenance": "These verdicts were judged live by claude-opus-5 at 2026-09-06T12:00:00.000Z, against a blinded context that names only the company and its industry. A model judge is not deterministic, so a re-run will vary. Commit these verdicts to an arm's verdicts.json to freeze this run as a reproducible fixture.",
+  "model": "claude-opus-5",
+  "ranAt": "2026-09-06T12:00:00.000Z"
+}
+```
+
 ### Evidence annotations
 
 A gated document binds a claim to its evidence inline, at the end of the
@@ -186,6 +232,16 @@ assumption. This repository cites that discipline and reimplements the
 vocabulary. It does not import the tool. A grade outside C1 to C5, or an
 annotation with no grade at all, is refused loudly rather than dropped, because
 a silently dropped grade turns a gated document into a naive one.
+
+An annotation binds to the sentence immediately before it and to no other. If
+that sentence carries no assertable claim the run refuses and names the orphan,
+rather than attaching the evidence to some earlier claim it was never written
+for.
+
+```
+$ node bin/benchmark.mjs --recorded --arm ./orphan-arm
+Evidence entry E4 at grade C5 has nothing to bind to. The sentence before it, "We assume that holds.", carries no assertable claim. Attach the evidence to a claim or remove the annotation.
+```
 
 ---
 
@@ -220,7 +276,7 @@ lib/score.mjs               rates, spread, and the comparison table
 lib/run.mjs                 the wire between the three stages
 bin/benchmark.mjs           the CLI
 fixtures/                   two synthetic arms and their recorded verdicts
-test/                       68 tests on node:test
+test/                       99 tests on node:test
 ```
 
 Everything in `fixtures/` is invented. Northwind Robotics and Acme Freight do
