@@ -154,6 +154,45 @@ test("binds each annotation in a paragraph to the sentence it closes", () => {
   assert.deepEqual(claims[1].evidence, { id: "E2", grade: "C3" });
 });
 
+test("refuses an annotation whose preceding sentence produced no claim", () => {
+  // Reproduced case one. Without the refusal, E3 silently binds to the margin
+  // claim two sentences earlier, attributing evidence to a claim it was never
+  // written for.
+  assert.throws(
+    () =>
+      extractClaims(
+        "Our margin sits at 12 percent today. We assume that holds. [evidence: E3 | grade: C5]"
+      ),
+    /E3/
+  );
+});
+
+test("refuses an annotation in a chunk that produced no claim at all", () => {
+  // Reproduced case two. Without the refusal the annotation disappears with no
+  // error, which contradicts the fail-closed guarantee.
+  assert.throws(
+    () => extractClaims("We assume that holds. [evidence: E4 | grade: C5]"),
+    /E4/
+  );
+});
+
+test("the orphan refusal names the sentence that failed to carry the evidence", () => {
+  assert.throws(
+    () => extractClaims("We assume that holds. [evidence: E4 | grade: C5]"),
+    /We assume that holds\./
+  );
+});
+
+test("binds an annotation to the sentence immediately before it, not an earlier one", () => {
+  const claims = extractClaims(
+    "Margin sits at 12 percent today. Acceptance averages 61 percent. [evidence: E3 | grade: C5]"
+  );
+
+  assert.equal(claims.length, 2);
+  assert.equal(claims[0].evidence, null);
+  assert.deepEqual(claims[1].evidence, { id: "E3", grade: "C5" });
+});
+
 test("carries a null evidence entry when a claim is unannotated", () => {
   const claims = extractClaims("Deployments rose 40 percent.");
 
