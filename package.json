@@ -1,0 +1,18 @@
+{
+  "name": "strategy-benchmark",
+  "version": "0.1.0",
+  "description": "A reproducible benchmark measuring whether a GTM strategy's claims survive adversarial scrutiny.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "strategy-benchmark": "./bin/benchmark.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "benchmark": "node bin/benchmark.mjs --recorded"
+  }
+}
