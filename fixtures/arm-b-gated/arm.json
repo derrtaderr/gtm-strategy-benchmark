@@ -1,0 +1,8 @@
+{
+  "name": "gated",
+  "label": "Arm B, gated",
+  "subject": "Acme Freight, a fictional regional freight brokerage",
+  "context": "A go-to-market strategy document for Acme Freight, a regional freight brokerage.",
+  "strategy": "strategy.md",
+  "verdicts": "verdicts.json"
+}

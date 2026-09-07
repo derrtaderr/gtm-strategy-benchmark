@@ -1,0 +1,55 @@
+{
+  "provenance": "Applied by hand from the examiner rubric in SPEC.md section 4. Not captured from a live model run. See SPEC.md section 7.",
+  "verdicts": [
+    {
+      "claim": "Acme Freight books 4,100 loads a month across its Southeast corridor.",
+      "verdict": "SURVIVES",
+      "reason": "E1 is the brokerage's own tender export reconciled against invoices, and the claim states exactly what that record contains."
+    },
+    {
+      "claim": "Carrier acceptance on the first tender averages 61 percent.",
+      "verdict": "SURVIVES",
+      "reason": "The same verified export carries first-tender outcomes directly, and the claim reports an average rather than extrapolating from one."
+    },
+    {
+      "claim": "Shippers who lost a load to a failed tender churned at roughly 2x the rate of shippers who did not.",
+      "verdict": "COLLAPSES",
+      "reason": "E2 is described as two analyses agreeing on direction, which supports a higher rate but not the stated magnitude of 2x."
+    },
+    {
+      "claim": "3 of the 5 shippers interviewed named tender reliability as their first reason for consolidating brokers.",
+      "verdict": "SURVIVES",
+      "reason": "The claim is scoped to a count within the interviews themselves and does not generalize past what a single uncorroborated interviewer recorded."
+    },
+    {
+      "claim": "The dispatch team can be instrumented without a TMS migration.",
+      "verdict": "SURVIVES",
+      "reason": "E5 is a vendor review confirmed by a second engineer against the live system, which is a sufficient basis for a feasibility claim stated without a timeline."
+    },
+    {
+      "claim": "An outbound test produced 9 replies from 140 sends over two weeks.",
+      "verdict": "SURVIVES",
+      "reason": "This reports the test's own result at the test's own size and claims nothing beyond it."
+    },
+    {
+      "claim": "Acme Freight assumes for planning that first-tender acceptance is a constraint on margin rather than only a symptom of one.",
+      "verdict": "SURVIVES",
+      "reason": "It is labeled C5 and phrased as an assumption held for planning, so a skeptical reader can accept it as exactly the unmeasured premise it says it is."
+    },
+    {
+      "claim": "Raising first-tender acceptance to 75 percent will lift gross margin by 3 points.",
+      "verdict": "COLLAPSES",
+      "reason": "A C5 assumption with no measurement behind it cannot carry a quantified projection stated in the firm future tense."
+    },
+    {
+      "claim": "Mid-market shippers moving 200 to 900 loads a month are the segment where reliability outranks price.",
+      "verdict": "COLLAPSES",
+      "reason": "Five uncorroborated interviews cannot establish a ranking across a whole segment, and the load band appears nowhere in the cited evidence."
+    },
+    {
+      "claim": "The reply rate from the outbound test will hold as send volume scales.",
+      "verdict": "COLLAPSES",
+      "reason": "A 140 send sample supports the observed result and not its persistence at higher volume, which the C4 grade concedes is inference."
+    }
+  ]
+}
