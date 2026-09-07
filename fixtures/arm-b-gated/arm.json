@@ -1,0 +1,8 @@
+{
+  "name": "gated",
+  "label": "Arm B, gated",
+  "subject": "Acme Freight, a fictional regional freight brokerage",
+  "context": "A go-to-market strategy for Acme Freight produced under a gated-evidence discipline, where every claim must carry a graded evidence entry or be refused before it reaches the page.",
+  "strategy": "strategy.md",
+  "verdicts": "verdicts.json"
+}

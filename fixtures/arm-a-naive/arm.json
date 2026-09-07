@@ -1,0 +1,8 @@
+{
+  "name": "naive",
+  "label": "Arm A, naive",
+  "subject": "Northwind Robotics, a fictional warehouse automation vendor",
+  "context": "A go-to-market strategy for Northwind Robotics produced by a single unconstrained prompt, with no requirement that any claim carry evidence.",
+  "strategy": "strategy.md",
+  "verdicts": "verdicts.json"
+}

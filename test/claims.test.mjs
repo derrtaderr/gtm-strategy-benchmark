@@ -110,6 +110,50 @@ test("refuses input that is not text, naming the type received", () => {
   assert.throws(() => extractClaims(null), /received object/);
 });
 
+test("joins a sentence wrapped across lines instead of splitting it in two", () => {
+  const claims = extractClaims(
+    "The market is growing at 23 percent annually and\nwill exceed 51 billion within four years."
+  );
+
+  assert.equal(claims.length, 1);
+  assert.equal(
+    claims[0].text,
+    "The market is growing at 23 percent annually and will exceed 51 billion within four years."
+  );
+});
+
+test("keeps a blank line as a paragraph break", () => {
+  const claims = extractClaims(
+    "Renewals rose 12 percent.\n\nDeployments rose 40 percent."
+  );
+
+  assert.equal(claims.length, 2);
+});
+
+test("keeps each bullet a separate claim rather than joining the list", () => {
+  const claims = extractClaims(
+    "- Renewals rose 12 percent\n- Deployments rose 40 percent"
+  );
+
+  assert.deepEqual(
+    claims.map((c) => c.text),
+    ["Renewals rose 12 percent", "Deployments rose 40 percent"]
+  );
+});
+
+test("binds each annotation in a paragraph to the sentence it closes", () => {
+  const claims = extractClaims(
+    "Loads reached 4,100 a month. [evidence: E1 | grade: C1] " +
+      "Acceptance averages 61 percent. [evidence: E2 | grade: C3]"
+  );
+
+  assert.equal(claims.length, 2);
+  assert.equal(claims[0].text, "Loads reached 4,100 a month.");
+  assert.deepEqual(claims[0].evidence, { id: "E1", grade: "C1" });
+  assert.equal(claims[1].text, "Acceptance averages 61 percent.");
+  assert.deepEqual(claims[1].evidence, { id: "E2", grade: "C3" });
+});
+
 test("carries a null evidence entry when a claim is unannotated", () => {
   const claims = extractClaims("Deployments rose 40 percent.");
 
