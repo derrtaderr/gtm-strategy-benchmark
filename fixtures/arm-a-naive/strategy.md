@@ -1,8 +1,12 @@
 # Go-to-market strategy, Northwind Robotics
 
-Everything below is fictional. Northwind Robotics does not exist. This document
-is a synthetic transcript written to represent the output of a single
-unconstrained prompt, and it is used as arm A of the benchmark.
+```
+Fixture note, held outside the scored text.
+Northwind Robotics is invented. Every number below is invented. This file is a
+synthetic transcript standing in for the output of a single unconstrained
+prompt, and it is arm A of the benchmark. Notes about the fixture live in this
+fenced block so the benchmark scores a strategy rather than a disclaimer.
+```
 
 ## Market
 

@@ -1,12 +1,12 @@
 # Go-to-market strategy, Acme Freight
 
-Everything below is fictional. Acme Freight does not exist. This document is a
-synthetic transcript written to represent the output of a gated-evidence walk,
-and it is used as arm B of the benchmark.
-
-Every claim below carries an evidence id and a confidence grade, written in the
-form the benchmark reads. Claims that could not be bound to an evidence entry
-were refused during drafting and are absent rather than softened.
+```
+Fixture note, held outside the scored text.
+Acme Freight is invented. Every number below is invented. This file is a
+synthetic transcript standing in for the output of a gated-evidence walk, and
+it is arm B of the benchmark. Claims that could not be bound to an evidence
+entry were refused during drafting and are absent rather than softened.
+```
 
 ## Evidence register
 
@@ -30,9 +30,9 @@ Acme Freight books 4,100 loads a month across its Southeast corridor. [evidence:
 
 Carrier acceptance on the first tender averages 61 percent. [evidence: E1 | grade: C1]
 
-Shippers who lost a load to a failed tender churn at a higher rate than shippers who did not. [evidence: E2 | grade: C2]
+Shippers who lost a load to a failed tender churned at roughly 2x the rate of shippers who did not. [evidence: E2 | grade: C2]
 
-Three of the five shippers interviewed named tender reliability as their first reason for consolidating brokers. [evidence: E4 | grade: C3]
+3 of the 5 shippers interviewed named tender reliability as their first reason for consolidating brokers. [evidence: E4 | grade: C3]
 
 The dispatch team can be instrumented without a TMS migration. [evidence: E5 | grade: C2]
 
@@ -40,7 +40,7 @@ An outbound test produced 9 replies from 140 sends over two weeks. [evidence: E6
 
 ## What is assumed rather than known
 
-Assume for planning that first-tender acceptance is a constraint on margin rather than only a symptom of one. [evidence: E3 | grade: C5]
+Acme Freight assumes for planning that first-tender acceptance is a constraint on margin rather than only a symptom of one. [evidence: E3 | grade: C5]
 
 Raising first-tender acceptance to 75 percent will lift gross margin by 3 points. [evidence: E3 | grade: C5]
 
