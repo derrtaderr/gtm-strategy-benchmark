@@ -1,5 +1,4 @@
-# strategy-benchmark
-
+# gtm-strategy-benchmark
 Ask a language model for a go-to-market strategy and you get fluent, confident
 prose. This benchmark asks a harder question of that prose, which is how much of
 it survives an adversary demanding the evidence behind every sentence.
